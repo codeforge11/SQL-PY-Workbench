@@ -63,3 +63,4 @@ trove_classifiers==2024.3.3
 urllib3_secure_extra==0.1.0
 VideoCapture==0.9.5
 xmlrpclib==1.0.1
+mysql-connector-python==8.3.0

@@ -1,8 +1,8 @@
-from tkinter import Tk, PhotoImage, Button, Label, Entry, Text, Frame
+from ttkthemes import ThemedTk
+from tkinter import PhotoImage, Button, Label, Entry, Text, Frame
 import tkinter as tk
 import tkinter.ttk as ttk
 import mysql.connector
-
 
 class MainWindow:
     def __init__(self, root):
@@ -186,17 +186,16 @@ class MainWindow:
         # Recreate the Treeview widget
         if hasattr(self, 'tree'):
             self.tree.destroy()
-            self.tree = ttk.Treeview(self.sql_frame, show='headings')
-            self.tree.pack()
+        self.tree = ttk.Treeview(self.sql_frame, show='headings')
+        self.tree.pack()
 
     def display_message(self, message):
         # Display a message in the messages_text widget
         self.messages_text.insert(tk.END, message + "\n")
 
 
-
 # Main section
 if __name__ == "__main__":
-    root = Tk()
+    root = ThemedTk(theme="yaru") # Themes for code
     main_window = MainWindow(root)
     root.mainloop()
