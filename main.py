@@ -4,6 +4,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import mysql.connector
 
+
 class MainWindow:
     def __init__(self, root):
         # Initialize the main window and set properties
@@ -196,6 +197,6 @@ class MainWindow:
 
 # Main section
 if __name__ == "__main__":
-    root = ThemedTk(theme="yaru") # Themes for code
+    root = ThemedTk(theme="yaru")  # Themes for code
     main_window = MainWindow(root)
     root.mainloop()
