@@ -1,15 +1,14 @@
 from ttkthemes import ThemedTk
 from tkinter import PhotoImage, Button, Label, Entry, Text, Frame
 import tkinter as tk
-import tkinter.ttk as ttk
 import mysql.connector
 
 
 class MainWindow:
-    def __init__(self, root):
+    def __init__(self, root2):
         # Initialize the main window and set properties
         self.db = None
-        self.root = root
+        self.root = root2
         self.root.resizable(width=False, height=False)
         self.root.title("SQL-PY-Workbench")
         self.small_icon = PhotoImage(file="./Images/16ico.png")
@@ -63,7 +62,6 @@ class MainWindow:
 
         # Create and pack SQL execution buttons and labels
         self.execute_button = Button(self.sql_frame, text="Execute SQL", command=self.execute_sql)
-        self.clear_results_button = Button(self.sql_frame, text="Clear", command=self.clear_results)
         self.status_label = Label(self.sql_frame, text="", fg="green")
 
         # Create and pack result display widgets
@@ -75,7 +73,7 @@ class MainWindow:
 
         # Create and pack messages display widgets
         self.messages_label = Label(self.root, text="Messages:")
-        self.messages_label.pack(pady=5)
+        self.messages_label.pack(pady=10)
 
         self.messages_text = Text(self.root, height=5, width=60)
         self.messages_text.pack(pady=5)
@@ -98,7 +96,6 @@ class MainWindow:
         self.sql_label.pack_forget()
         self.sql_entry.pack_forget()
         self.execute_button.pack_forget()
-        self.clear_results_button.pack_forget()
         self.result_label.pack_forget()
         self.result_text.pack_forget()
         self.messages_label.pack_forget()
@@ -109,12 +106,22 @@ class MainWindow:
         self.sql_label.pack(pady=5)
         self.sql_entry.pack(pady=5)
         self.execute_button.pack(pady=10)
-        self.clear_results_button.pack(pady=5)
         self.result_label.pack(pady=5)
         self.result_text.pack(pady=5)
         self.messages_label.pack(pady=5)
         self.messages_text.pack(pady=5)
         self.root.geometry('800x800')
+
+        # Get screen width and height
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+
+        # Calculate position
+        x = (screen_width / 2) - (800 / 2)  # 800 is the width of the window
+        y = (screen_height / 2) - (800 / 2)  # 800 is the height of the window
+
+        # Set the position of the window to the center of the screen
+        self.root.geometry('%dx%d+%d+%d' % (800, 800, x, y))
 
     def button_clicked(self):
         # Handle database connection button click
@@ -139,6 +146,7 @@ class MainWindow:
             self.text_field3.pack_forget()
             self.connect_button.pack_forget()
             self.error_label.pack_forget()
+            self.messages_text.delete("1.0", tk.END)
 
             # Show SQL-related elements
             self.show_elements()
@@ -149,6 +157,9 @@ class MainWindow:
             self.display_message(f"Error: {err}")
 
     def execute_sql(self):
+        # Clear the messages_text widget
+        self.messages_text.delete("1.0", tk.END)
+
         # Clear the Treeview widget
         if hasattr(self, 'tree'):
             for i in self.tree.get_children():
@@ -179,17 +190,6 @@ class MainWindow:
         for row in data:
             self.result_text.insert(tk.END, " | ".join(map(str, row)) + "\n")
 
-    def clear_results(self):
-        # Clear result_text and messages_text widgets
-        self.result_text.delete("1.0", tk.END)
-        self.messages_text.delete("1.0", tk.END)
-
-        # Recreate the Treeview widget
-        if hasattr(self, 'tree'):
-            self.tree.destroy()
-        self.tree = ttk.Treeview(self.sql_frame, show='headings')
-        self.tree.pack()
-
     def display_message(self, message):
         # Display a message in the messages_text widget
         self.messages_text.insert(tk.END, message + "\n")
@@ -197,6 +197,6 @@ class MainWindow:
 
 # Main section
 if __name__ == "__main__":
-    root = ThemedTk(theme="yaru")  # Themes for code
+    root = ThemedTk(theme="arc")  # Themes for code
     main_window = MainWindow(root)
     root.mainloop()
