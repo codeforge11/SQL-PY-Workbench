@@ -1,133 +1,140 @@
-from ttkthemes import ThemedTk
-from tkinter import PhotoImage, Button, Label, Entry, Text, Frame
-import tkinter as tk
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QIcon
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QTextEdit, QVBoxLayout, QWidget
 import mysql.connector
+import sys
 
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
 
-class MainWindow:
-    def __init__(self, root2):
         # Initialize the main window and set properties
         self.db = None
-        self.root = root2
-        self.root.resizable(width=False, height=False)
-        self.root.title("SQL-PY-Workbench")
-        self.small_icon = PhotoImage(file="./Images/16ico.png")
-        self.large_icon = PhotoImage(file="./Images/32ico.png")
-        self.root.iconphoto(False, self.large_icon, self.small_icon)
+        self.setWindowTitle("SQL-PY-Workbench")
+        self.setGeometry(300, 300, 800, 800)
 
-        # Set color style and theme images
-        self.colSty = False
-        self.WHITE = PhotoImage(file="./Images/Themes/L.png")
-        self.BLACK = PhotoImage(file="./Images/Themes/Li.png")
+        # Set the window icon
+        self.setWindowIcon(QIcon('Images/32ico.png'))
 
-        # Create and pack theme button
-        self.theme_button = Button(self.root, image=self.WHITE, command=self.change_color, bd=0, highlightthickness=0)
-        self.theme_button.pack(side=tk.TOP, anchor=tk.NE, padx=0, pady=0)
+        # Set the window size to be fixed
+        self.setFixedSize(800, 800)
 
         # Create and pack labels and entry fields for database connection
-        self.label1 = Label(self.root, text="Host:")
-        self.label2 = Label(self.root, text="User:")
-        self.label3 = Label(self.root, text="Password:")
+        self.label1 = QLabel("Host:", self)
+        self.label1.setAlignment(Qt.AlignCenter)
+        self.label1.setFont(QFont('Arial', 16))
 
-        self.label1.pack(pady=0)
-        self.text_field1 = Entry(self.root, width=30)
-        self.text_field1.pack(pady=0)
+        self.label2 = QLabel("User:", self)
+        self.label2.setAlignment(Qt.AlignCenter)
+        self.label2.setFont(QFont('Arial', 16))
 
-        self.label2.pack(pady=0)
-        self.text_field2 = Entry(self.root, width=30)
-        self.text_field2.pack(pady=0)
+        self.label3 = QLabel("Password:", self)
+        self.label3.setAlignment(Qt.AlignCenter)
+        self.label3.setFont(QFont('Arial', 16))
 
-        self.label3.pack(pady=0)
-        self.text_field3 = Entry(self.root, width=30)
-        self.text_field3.pack(pady=0)
+        self.text_field1 = QLineEdit(self)
+        self.text_field1.setFont(QFont('Arial', 16))
+
+        self.text_field2 = QLineEdit(self)
+        self.text_field2.setFont(QFont('Arial', 16))
+
+        self.text_field3 = QLineEdit(self)
+        self.text_field3.setFont(QFont('Arial', 16))
 
         # Create and pack connect button
-        self.connect_button = Button(self.root, text="Connect to database", command=self.button_clicked)
-        self.connect_button.pack(pady=10)
+        self.connect_button = QPushButton("Connect to database", self)
+        self.connect_button.clicked.connect(self.button_clicked)
+        self.connect_button.setStyleSheet("background-color: #3a86ff; color: white; font-size: 16px;")
 
         # Create and pack error label
-        self.error_label = Label(self.root, text="", fg="red")
-        self.error_label.pack(pady=10)
-
-        # Create and pack SQL frame
-        self.sql_frame = Frame(self.root, bg="white")
-        self.sql_frame.pack(expand=True, fill='both')
+        self.error_label = QLabel("", self)
+        self.error_label.setStyleSheet("color: red")
 
         # Create and pack SQL entry widgets
-        self.sql_label = Label(self.sql_frame, text="Enter SQL code:")
-        self.sql_label.pack(pady=5)
+        self.sql_label = QLabel("Enter SQL code:", self)
+        self.sql_label.setAlignment(Qt.AlignCenter)
+        self.sql_label.setFont(QFont('Arial', 16))
 
-        self.sql_entry = Text(self.sql_frame, height=10, width=60)
-        self.sql_entry.pack(pady=5)
+        self.sql_entry = QTextEdit(self)
 
         # Create and pack SQL execution buttons and labels
-        self.execute_button = Button(self.sql_frame, text="Execute SQL", command=self.execute_sql)
-        self.status_label = Label(self.sql_frame, text="", fg="green")
+        self.execute_button = QPushButton("Execute SQL", self)
+        self.execute_button.clicked.connect(self.execute_sql)
+        self.execute_button.setStyleSheet("background-color: #3a86ff; color: white; font-size: 16px;")
+        # Define status_label
+        self.status_label = QLabel("", self)
+        self.status_label.setAlignment(Qt.AlignCenter)
+        self.status_label.setFont(QFont('Arial', 16))
 
         # Create and pack result display widgets
-        self.result_label = Label(self.sql_frame, text="Results:")
-        self.result_label.pack(pady=5)
+        self.result_label = QLabel("Results:", self)
+        self.result_label.setAlignment(Qt.AlignCenter)
+        self.result_label.setFont(QFont('Arial', 16))
 
-        self.result_text = Text(self.sql_frame, height=10, width=60)
-        self.result_text.pack(pady=5)
+        self.result_text = QTextEdit(self)
+        self.result_text.setReadOnly(True)
 
         # Create and pack messages display widgets
-        self.messages_label = Label(self.root, text="Messages:")
-        self.messages_label.pack(pady=10)
+        self.messages_label = QLabel("Messages:", self)
+        self.messages_label.setAlignment(Qt.AlignCenter)
+        self.messages_label.setFont(QFont('Arial', 16))
 
-        self.messages_text = Text(self.root, height=5, width=60)
-        self.messages_text.pack(pady=5)
+        self.messages_text = QTextEdit(self)
+        self.messages_text.setReadOnly(True)
 
         # Hide elements initially
         self.hide_elements()
 
-    def change_color(self):
-        # Toggle color theme and update the appearance
-        if self.colSty:
-            self.root.configure(bg="light gray")
-            self.theme_button.config(image=self.WHITE)
-        else:
-            self.root.configure(bg="black")
-            self.theme_button.config(image=self.BLACK)
-        self.colSty = not self.colSty
+        # Set layout
+        layout = QVBoxLayout()
+        layout.setSpacing(10)  # Set spacing between widgets to 10 pixels
+        layout.addWidget(self.label1)
+        layout.addWidget(self.text_field1)
+        layout.addWidget(self.label2)
+        layout.addWidget(self.text_field2)
+        layout.addWidget(self.label3)
+        layout.addWidget(self.text_field3)
+        layout.addWidget(self.connect_button)
+        layout.addWidget(self.error_label)
+        layout.addWidget(self.sql_label)
+        layout.addWidget(self.sql_entry)
+        layout.addWidget(self.execute_button)
+        layout.addWidget(self.status_label)  # Now status_label is defined
+        layout.addWidget(self.result_label)
+        layout.addWidget(self.result_text)
+        layout.addWidget(self.messages_label)
+        layout.addWidget(self.messages_text)
+
+        widget = QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
 
     def hide_elements(self):
         # Hide SQL-related elements
-        self.sql_label.pack_forget()
-        self.sql_entry.pack_forget()
-        self.execute_button.pack_forget()
-        self.result_label.pack_forget()
-        self.result_text.pack_forget()
-        self.messages_label.pack_forget()
-        self.messages_text.pack_forget()
+        self.sql_label.hide()
+        self.sql_entry.hide()
+        self.execute_button.hide()
+        self.result_label.hide()
+        self.result_text.hide()
+        self.messages_label.hide()
+        self.messages_text.hide()
+        self.setStyleSheet("background-color: light gray")  # Reset to default color when hiding elements
 
     def show_elements(self):
         # Show SQL-related elements
-        self.sql_label.pack(pady=5)
-        self.sql_entry.pack(pady=5)
-        self.execute_button.pack(pady=10)
-        self.result_label.pack(pady=5)
-        self.result_text.pack(pady=5)
-        self.messages_label.pack(pady=5)
-        self.messages_text.pack(pady=5)
-        self.root.geometry('800x800')
-
-        # Get screen width and height
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
-
-        # Calculate position
-        x = (screen_width / 2) - (800 / 2)  # 800 is the width of the window
-        y = (screen_height / 2) - (800 / 2)  # 800 is the height of the window
-
-        # Set the position of the window to the center of the screen
-        self.root.geometry('%dx%d+%d+%d' % (800, 800, x, y))
+        self.sql_label.show()
+        self.sql_entry.show()
+        self.execute_button.show()
+        self.result_label.show()
+        self.result_text.show()
+        self.messages_label.show()
+        self.messages_text.show()
 
     def button_clicked(self):
         # Handle database connection button click
-        self.host = self.text_field1.get()
-        self.user = self.text_field2.get()
-        self.password = self.text_field3.get()
+        self.host = self.text_field1.text()
+        self.user = self.text_field2.text()
+        self.password = self.text_field3.text()
 
         try:
             # Attempt to connect to the MySQL database
@@ -138,65 +145,72 @@ class MainWindow:
             )
 
             # Hide connection-related elements
-            self.label1.pack_forget()
-            self.label2.pack_forget()
-            self.label3.pack_forget()
-            self.text_field1.pack_forget()
-            self.text_field2.pack_forget()
-            self.text_field3.pack_forget()
-            self.connect_button.pack_forget()
-            self.error_label.pack_forget()
-            self.messages_text.delete("1.0", tk.END)
+            self.label1.hide()
+            self.label2.hide()
+            self.label3.hide()
+            self.text_field1.hide()
+            self.text_field2.hide()
+            self.text_field3.hide()
+            self.connect_button.hide()
+            self.error_label.hide()
+            self.messages_text.clear()
 
             # Show SQL-related elements
             self.show_elements()
 
         except mysql.connector.Error as err:
             # Handle connection error
-            self.error_label.config(text=f"Connection error: {err}")
-            self.display_message(f"Error: {err}")
+            self.display_message(f"Connection error: {err}")
 
     def execute_sql(self):
-        # Clear the messages_text widget
-        self.messages_text.delete("1.0", tk.END)
-
-        # Clear the Treeview widget
-        if hasattr(self, 'tree'):
-            for i in self.tree.get_children():
-                self.tree.delete(i)
+        # Clear the messages_text widget and reset the status_label
+        self.messages_text.clear()
+        self.status_label.setText("")
+        self.status_label.setStyleSheet("")
 
         # Execute entered SQL code and display results or errors
         if self.db is not None and self.db.is_connected():
             cursor = self.db.cursor()
-            sql_code = self.sql_entry.get("1.0", 'end-1c')
+            sql_code = self.sql_entry.toPlainText()
             try:
                 cursor.execute(sql_code)
                 if cursor.description:
                     result_data = list(cursor.fetchall())
-                    self.display_results(result_data)  # Use display_results instead of display_table
-                    self.status_label.config(text="SQL executed successfully", fg="green")
+                    self.display_results(result_data, cursor)  # Pass cursor to display_results
+                    self.status_label.setText("SQL executed successfully")
+                    self.status_label.setStyleSheet("color: green")
                 else:
-                    self.status_label.config(text="SQL executed successfully", fg="green")
+                    self.status_label.setText("SQL executed successfully")
+                    self.status_label.setStyleSheet("color: green")
             except mysql.connector.Error as err:
                 # Handle SQL execution error
-                self.status_label.config(text=f"SQL execution error: {err}", fg="red")
-                self.display_message(f"Error: {err}")
+                self.display_message(f"SQL execution error: {err}")
         else:
-            self.status_label.config(text="Not connected to the database", fg="red")
+            self.status_label.setText("Not connected to the database")
+            self.status_label.setStyleSheet("color: red")
 
-    def display_results(self, data):
+    def display_results(self, data, cursor):
         # Display query results in the result_text widget
-        self.result_text.delete("1.0", tk.END)
+        self.result_text.clear()
+
+        # Display column names
+        column_names = [i[0] for i in cursor.description]
+        self.result_text.append(" | ".join(column_names))
+
+        # Display rows
         for row in data:
-            self.result_text.insert(tk.END, " | ".join(map(str, row)) + "\n")
+            row_data = [f"{val}" for col, val in zip(column_names, row)]
+            self.result_text.append(" | ".join(row_data))
+            self.result_text.append("-" * 40)  # Add a line after each row
 
     def display_message(self, message):
         # Display a message in the messages_text widget
-        self.messages_text.insert(tk.END, message + "\n")
+        self.messages_text.append(message)
 
 
 # Main section
 if __name__ == "__main__":
-    root = ThemedTk(theme="arc")  # Themes for code
-    main_window = MainWindow(root)
-    root.mainloop()
+    app = QApplication(sys.argv)
+    main_window = MainWindow()
+    main_window.show()
+    sys.exit(app.exec_())
