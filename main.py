@@ -11,7 +11,7 @@ class MainWindow(QMainWindow):
         # Initialize the main window and set properties
         self.db = None
         self.setWindowTitle("SQL-PY-Workbench")
-        self.setGeometry(300, 300, 800, 800)
+        self.setGeometry(0, 0, 800, 800)
 
         # Set the window icon
         self.setWindowIcon(QIcon('Images/32ico.png'))
@@ -33,18 +33,18 @@ class MainWindow(QMainWindow):
         self.label3.setFont(QFont('Arial', 16))
 
         self.text_field1 = QLineEdit(self)
-        self.text_field1.setFont(QFont('Arial', 16))
+        self.text_field1.setFont(QFont('Arial', 20))
 
         self.text_field2 = QLineEdit(self)
-        self.text_field2.setFont(QFont('Arial', 16))
+        self.text_field2.setFont(QFont('Arial', 20))
 
         self.text_field3 = QLineEdit(self)
-        self.text_field3.setFont(QFont('Arial', 16))
+        self.text_field3.setFont(QFont('Arial', 20))
 
         # Create and pack connect button
         self.connect_button = QPushButton("Connect to database", self)
         self.connect_button.clicked.connect(self.button_clicked)
-        self.connect_button.setStyleSheet("background-color: #3a86ff; color: white; font-size: 16px;")
+        self.connect_button.setStyleSheet("background-color: #3a86ff; color: white; font-size: 25px;")
 
         # Create and pack error label
         self.error_label = QLabel("", self)
@@ -53,9 +53,10 @@ class MainWindow(QMainWindow):
         # Create and pack SQL entry widgets
         self.sql_label = QLabel("Enter SQL code:", self)
         self.sql_label.setAlignment(Qt.AlignCenter)
-        self.sql_label.setFont(QFont('Arial', 16))
+        self.sql_label.setFont(QFont('Arial', 20))
 
         self.sql_entry = QTextEdit(self)
+        self.sql_entry.setFont(QFont('Arial', 22))  # Set the font size to 22
 
         # Create and pack SQL execution buttons and labels
         self.execute_button = QPushButton("Execute SQL", self)
@@ -64,12 +65,12 @@ class MainWindow(QMainWindow):
         # Define status_label
         self.status_label = QLabel("", self)
         self.status_label.setAlignment(Qt.AlignCenter)
-        self.status_label.setFont(QFont('Arial', 16))
+        self.status_label.setFont(QFont('Arial', 20))
 
         # Create and pack result display widgets
         self.result_label = QLabel("Results:", self)
         self.result_label.setAlignment(Qt.AlignCenter)
-        self.result_label.setFont(QFont('Arial', 16))
+        self.result_label.setFont(QFont('Arial', 20))
 
         self.result_text = QTextEdit(self)
         self.result_text.setReadOnly(True)
@@ -77,7 +78,7 @@ class MainWindow(QMainWindow):
         # Create and pack messages display widgets
         self.messages_label = QLabel("Messages:", self)
         self.messages_label.setAlignment(Qt.AlignCenter)
-        self.messages_label.setFont(QFont('Arial', 16))
+        self.messages_label.setFont(QFont('Arial', 20))
 
         self.messages_text = QTextEdit(self)
         self.messages_text.setReadOnly(True)
@@ -87,7 +88,7 @@ class MainWindow(QMainWindow):
 
         # Set layout
         layout = QVBoxLayout()
-        layout.setSpacing(10)  # Set spacing between widgets to 10 pixels
+        layout.setSpacing(10)
         layout.addWidget(self.label1)
         layout.addWidget(self.text_field1)
         layout.addWidget(self.label2)
@@ -99,7 +100,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.sql_label)
         layout.addWidget(self.sql_entry)
         layout.addWidget(self.execute_button)
-        layout.addWidget(self.status_label)  # Now status_label is defined
+        layout.addWidget(self.status_label)
         layout.addWidget(self.result_label)
         layout.addWidget(self.result_text)
         layout.addWidget(self.messages_label)
@@ -118,7 +119,7 @@ class MainWindow(QMainWindow):
         self.result_text.hide()
         self.messages_label.hide()
         self.messages_text.hide()
-        self.setStyleSheet("background-color: light gray")  # Reset to default color when hiding elements
+        self.setStyleSheet("background-color: light gray")
 
     def show_elements(self):
         # Show SQL-related elements
@@ -176,7 +177,7 @@ class MainWindow(QMainWindow):
                 cursor.execute(sql_code)
                 if cursor.description:
                     result_data = list(cursor.fetchall())
-                    self.display_results(result_data, cursor)  # Pass cursor to display_results
+                    self.display_results(result_data, cursor)  
                     self.status_label.setText("SQL executed successfully")
                     self.status_label.setStyleSheet("color: green")
                 else:
