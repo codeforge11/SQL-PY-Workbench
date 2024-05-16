@@ -13,8 +13,3 @@ How to install
 
   pip install 
 ```
-    
-## Authors
-
-- [@codeforge11](https://www.github.com/codeforge11)
-
