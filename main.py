@@ -30,6 +30,7 @@ class MainWindow(QMainWindow):
 
         self.text_field1 = QLineEdit(self)
         self.text_field1.setFont(QFont('Arial', 20))
+        self.text_field1.setPlaceholderText("localhost")
 
         self.text_field2 = QLineEdit(self)
         self.text_field2.setFont(QFont('Arial', 20))
@@ -107,6 +108,7 @@ class MainWindow(QMainWindow):
         self.messages_label.hide()
         self.messages_text.hide()
         self.setStyleSheet("background-color: light gray")
+        self.setFixedSize(800, 400)
 
     def show_elements(self):
         self.sql_label.show()
@@ -116,6 +118,8 @@ class MainWindow(QMainWindow):
         self.result_text.show()
         self.messages_label.show()
         self.messages_text.show()
+        self.setFixedSize(800, 800)
+
 
     def button_clicked(self):
         self.host = self.text_field1.text()
@@ -142,7 +146,8 @@ class MainWindow(QMainWindow):
             self.show_elements()
 
         except mysql.connector.Error as err:
-            self.display_message(f"Connection error: {err}")
+             self.display_message(f"Connection error: {err}")
+             self.error_label.setText(str(err))
 
     def execute_sql(self):
         self.messages_text.clear()
