@@ -20,6 +20,10 @@ class MainWindow(QMainWindow):
         self.label1.setAlignment(Qt.AlignCenter)
         self.label1.setFont(QFont('Arial', 16))
 
+        self.label4 = QLabel("Port:", self)
+        self.label4.setAlignment(Qt.AlignCenter)
+        self.label4.setFont(QFont('Arial', 16))
+
         self.label2 = QLabel("User:", self)
         self.label2.setAlignment(Qt.AlignCenter)
         self.label2.setFont(QFont('Arial', 16))
@@ -37,6 +41,10 @@ class MainWindow(QMainWindow):
 
         self.text_field3 = QLineEdit(self)
         self.text_field3.setFont(QFont('Arial', 20))
+
+        self.text_field4 = QLineEdit(self)
+        self.text_field4.setFont(QFont('Arial', 20))
+        self.text_field4.setPlaceholderText("3306")
 
         self.connect_button = QPushButton("Connect to database", self)
         self.connect_button.clicked.connect(self.button_clicked)
@@ -80,6 +88,8 @@ class MainWindow(QMainWindow):
         layout.setSpacing(10)
         layout.addWidget(self.label1)
         layout.addWidget(self.text_field1)
+        layout.addWidget(self.label4)
+        layout.addWidget(self.text_field4)
         layout.addWidget(self.label2)
         layout.addWidget(self.text_field2)
         layout.addWidget(self.label3)
@@ -120,25 +130,29 @@ class MainWindow(QMainWindow):
         self.messages_text.show()
         self.setFixedSize(800, 800)
 
-
     def button_clicked(self):
-        self.host = self.text_field1.text()
+        self.host = self.text_field1.text() if self.text_field1.text() else "127.0.0.1"
         self.user = self.text_field2.text()
         self.password = self.text_field3.text()
+        port_text = self.text_field4.text()
+        self.port = int(port_text) if port_text else 3306
 
         try:
             self.db = mysql.connector.connect(
                 host=self.host,
                 user=self.user,
-                password=self.password
+                password=self.password,
+                port=self.port
             )
 
             self.label1.hide()
             self.label2.hide()
             self.label3.hide()
+            self.label4.hide()
             self.text_field1.hide()
             self.text_field2.hide()
             self.text_field3.hide()
+            self.text_field4.hide()
             self.connect_button.hide()
             self.error_label.hide()
             self.messages_text.clear()
