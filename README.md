@@ -1,7 +1,7 @@
 
 # SQL PY WORKBENCH
 
-SQL Py Workbench is a python application which allows you to execute queries on your MySQL/MariaDB database.
+SQL PY Workbench is a Python application for executing queries on MySQL/MariaDB databases.
 ## Installation
 
 How to install

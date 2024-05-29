@@ -1,8 +1,9 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QIcon
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QTextEdit, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont, QIcon
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QTextEdit, QVBoxLayout, QWidget
 import mysql.connector
 import sys
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -13,38 +14,37 @@ class MainWindow(QMainWindow):
         self.setGeometry(0, 0, 800, 800)
 
         self.setWindowIcon(QIcon('Images/32ico.png'))
-
         self.setFixedSize(800, 800)
 
-        self.label1 = QLabel("Host:", self)
-        self.label1.setAlignment(Qt.AlignCenter)
-        self.label1.setFont(QFont('Arial', 16))
+        self.hostlabel = QLabel("Host:", self)
+        self.hostlabel.setAlignment(Qt.AlignCenter)
+        self.hostlabel.setFont(QFont('Arial', 16))
 
-        self.label4 = QLabel("Port:", self)
-        self.label4.setAlignment(Qt.AlignCenter)
-        self.label4.setFont(QFont('Arial', 16))
+        self.portlabel = QLabel("Port:", self)
+        self.portlabel.setAlignment(Qt.AlignCenter)
+        self.portlabel.setFont(QFont('Arial', 16))
 
-        self.label2 = QLabel("User:", self)
-        self.label2.setAlignment(Qt.AlignCenter)
-        self.label2.setFont(QFont('Arial', 16))
+        self.userlabel = QLabel("User:", self)
+        self.userlabel.setAlignment(Qt.AlignCenter)
+        self.userlabel.setFont(QFont('Arial', 16))
 
-        self.label3 = QLabel("Password:", self)
-        self.label3.setAlignment(Qt.AlignCenter)
-        self.label3.setFont(QFont('Arial', 16))
+        self.passwordlabel = QLabel("Password:", self)
+        self.passwordlabel.setAlignment(Qt.AlignCenter)
+        self.passwordlabel.setFont(QFont('Arial', 16))
 
-        self.text_field1 = QLineEdit(self)
-        self.text_field1.setFont(QFont('Arial', 20))
-        self.text_field1.setPlaceholderText("localhost")
+        self.host_input_field = QLineEdit(self)
+        self.host_input_field.setFont(QFont('Arial', 20))
+        self.host_input_field.setPlaceholderText("localhost")
 
-        self.text_field2 = QLineEdit(self)
-        self.text_field2.setFont(QFont('Arial', 20))
+        self.user_input_field = QLineEdit(self)
+        self.user_input_field.setFont(QFont('Arial', 20))
 
-        self.text_field3 = QLineEdit(self)
-        self.text_field3.setFont(QFont('Arial', 20))
+        self.password_input_field = QLineEdit(self)
+        self.password_input_field.setFont(QFont('Arial', 20))
 
-        self.text_field4 = QLineEdit(self)
-        self.text_field4.setFont(QFont('Arial', 20))
-        self.text_field4.setPlaceholderText("3306")
+        self.port_input_field = QLineEdit(self)
+        self.port_input_field.setFont(QFont('Arial', 20))
+        self.port_input_field.setPlaceholderText("3306")
 
         self.connect_button = QPushButton("Connect to database", self)
         self.connect_button.clicked.connect(self.button_clicked)
@@ -86,14 +86,14 @@ class MainWindow(QMainWindow):
 
         layout = QVBoxLayout()
         layout.setSpacing(10)
-        layout.addWidget(self.label1)
-        layout.addWidget(self.text_field1)
-        layout.addWidget(self.label4)
-        layout.addWidget(self.text_field4)
-        layout.addWidget(self.label2)
-        layout.addWidget(self.text_field2)
-        layout.addWidget(self.label3)
-        layout.addWidget(self.text_field3)
+        layout.addWidget(self.hostlabel)
+        layout.addWidget(self.host_input_field)
+        layout.addWidget(self.portlabel)
+        layout.addWidget(self.port_input_field)
+        layout.addWidget(self.userlabel)
+        layout.addWidget(self.user_input_field)
+        layout.addWidget(self.passwordlabel)
+        layout.addWidget(self.password_input_field)
         layout.addWidget(self.connect_button)
         layout.addWidget(self.error_label)
         layout.addWidget(self.sql_label)
@@ -131,10 +131,10 @@ class MainWindow(QMainWindow):
         self.setFixedSize(800, 800)
 
     def button_clicked(self):
-        self.host = self.text_field1.text() if self.text_field1.text() else "127.0.0.1"
-        self.user = self.text_field2.text()
-        self.password = self.text_field3.text()
-        port_text = self.text_field4.text()
+        self.host = self.host_input_field.text() if self.host_input_field.text() else "127.0.0.1"
+        self.user = self.user_input_field.text()
+        self.password = self.password_input_field.text()
+        port_text = self.port_input_field.text()
         self.port = int(port_text) if port_text else 3306
 
         try:
@@ -145,14 +145,14 @@ class MainWindow(QMainWindow):
                 port=self.port
             )
 
-            self.label1.hide()
-            self.label2.hide()
-            self.label3.hide()
-            self.label4.hide()
-            self.text_field1.hide()
-            self.text_field2.hide()
-            self.text_field3.hide()
-            self.text_field4.hide()
+            self.hostlabel.hide()
+            self.userlabel.hide()
+            self.passwordlabel.hide()
+            self.portlabel.hide()
+            self.host_input_field.hide()
+            self.user_input_field.hide()
+            self.password_input_field.hide()
+            self.port_input_field.hide()
             self.connect_button.hide()
             self.error_label.hide()
             self.messages_text.clear()
@@ -172,15 +172,14 @@ class MainWindow(QMainWindow):
             cursor = self.db.cursor()
             sql_code = self.sql_entry.toPlainText()
             try:
-                cursor.execute(sql_code)
-                if cursor.description:
-                    result_data = list(cursor.fetchall())
-                    self.display_results(result_data, cursor)
-                    self.status_label.setText("SQL executed successfully")
-                    self.status_label.setStyleSheet("color: green")
-                else:
-                    self.status_label.setText("SQL executed successfully")
-                    self.status_label.setStyleSheet("color: green")
+                result = cursor.execute(sql_code, multi=True)
+                if result is not None:
+                    for res in result:
+                        if res.with_rows:
+                            result_data = list(res.fetchall())
+                            self.display_results(result_data, res)
+                self.status_label.setText("SQL executed successfully")
+                self.status_label.setStyleSheet("color: green")
             except mysql.connector.Error as err:
                 self.display_message(f"SQL execution error: {err}")
         else:
@@ -205,4 +204,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = MainWindow()
     main_window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
