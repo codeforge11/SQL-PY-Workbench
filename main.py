@@ -4,7 +4,6 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QL
 import mysql.connector
 import sys
 
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -60,6 +59,10 @@ class MainWindow(QMainWindow):
         self.sql_entry = QTextEdit(self)
         self.sql_entry.setFont(QFont('Arial', 22))
 
+        self.exit_button = QPushButton("Exit", self)
+        self.exit_button.move(0, 0)
+        self.exit_button.clicked.connect(self.exit_database)
+
         self.execute_button = QPushButton("Execute SQL", self)
         self.execute_button.clicked.connect(self.execute_sql)
         self.execute_button.setStyleSheet("background-color: #3a86ff; color: white; font-size: 16px;")
@@ -104,6 +107,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.result_text)
         layout.addWidget(self.messages_label)
         layout.addWidget(self.messages_text)
+        layout.addWidget(self.exit_button)
 
         widget = QWidget()
         widget.setLayout(layout)
@@ -117,6 +121,7 @@ class MainWindow(QMainWindow):
         self.result_text.hide()
         self.messages_label.hide()
         self.messages_text.hide()
+        self.exit_button.hide()
         self.setStyleSheet("background-color: light gray")
         self.setFixedSize(800, 400)
 
@@ -128,6 +133,7 @@ class MainWindow(QMainWindow):
         self.result_text.show()
         self.messages_label.show()
         self.messages_text.show()
+        self.exit_button.show()
         self.setFixedSize(800, 800)
 
     def button_clicked(self):
@@ -160,8 +166,8 @@ class MainWindow(QMainWindow):
             self.show_elements()
 
         except mysql.connector.Error as err:
-             self.display_message(f"Connection error: {err}")
-             self.error_label.setText(str(err))
+            self.display_message(f"Connection error: {err}")
+            self.error_label.setText(str(err))
 
     def execute_sql(self):
         self.messages_text.clear()
@@ -199,6 +205,22 @@ class MainWindow(QMainWindow):
 
     def display_message(self, message):
         self.messages_text.append(message)
+
+    def exit_database(self):
+        if self.db is not None and self.db.is_connected():
+            self.db.close()
+            self.db = None
+        self.hide_elements()
+        self.hostlabel.show()
+        self.userlabel.show()
+        self.passwordlabel.show()
+        self.portlabel.show()
+        self.host_input_field.show()
+        self.user_input_field.show()
+        self.password_input_field.show()
+        self.port_input_field.show()
+        self.connect_button.show()
+        self.setFixedSize(800, 400)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
